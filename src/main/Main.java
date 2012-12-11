@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import methods.Construction;
+
 public class Main {
 public static void main(String[] args) {
     
@@ -17,19 +19,21 @@ public static void main(String[] args) {
         System.out.println(">" + filename);
         
         // Position of cities
-        int[][] positions = getPositionsFromFile(filename);
+        Integer[][] positions = getPositionsFromFile(filename);
         // Distances between cities
-        int[][] distances = calcDistancesBetweenCities(positions);
+        Integer[][] distances = calcDistancesBetweenCities(positions);
         
+        Construction construction = new Construction(distances);
+        construction.solveByNearestNeighbor();
         
     } // for (String filename : filenames)
 }
 
-private static int[][] getPositionsFromFile(String filename) {
+private static Integer[][] getPositionsFromFile(String filename) {
     // Dimension of TSP
     int dimension = 0;
     // Position of cities
-    int[][] positions = null;
+    Integer[][] positions = null;
     
     try {
         // Get info from a file
@@ -40,17 +44,17 @@ private static int[][] getPositionsFromFile(String filename) {
             // Get dimension
             if (line.startsWith("DIMENSION")) {
                 dimension = Integer.parseInt(line.split(":")[1].trim());
-                positions = new int[dimension][2];
+                positions = new Integer[dimension][2];
             }
             else {
                 // ex: 1 500 500
-                Pattern pattern = Pattern.compile("\\d+ \\d+ \\d+");
+                Pattern pattern = Pattern.compile("\\d+\\s+\\d+\\s+\\d+");
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.matches()) {
-                    String[] positionStrings = line.split(" ");
-                    int cityIndex = Integer.parseInt(positionStrings[0]);
-                    int cityX = Integer.parseInt(positionStrings[1]);
-                    int cityY = Integer.parseInt(positionStrings[2]);
+                    String[] positionStrings = line.split("\\s+");
+                    int cityIndex = Integer.parseInt(positionStrings[0].trim()) - 1;
+                    int cityX = Integer.parseInt(positionStrings[1].trim());
+                    int cityY = Integer.parseInt(positionStrings[2].trim());
 
                     positions[cityIndex][0] = cityX;
                     positions[cityIndex][1] = cityY;
@@ -72,16 +76,25 @@ private static int[][] getPositionsFromFile(String filename) {
     return positions;
 }
 
-private static int[][] calcDistancesBetweenCities(int[][] positions) {
+private static Integer[][] calcDistancesBetweenCities(Integer[][] positions) {
     final int dimension = positions.length;
     // Distances between cities
-    int[][] distances = new int[dimension][dimension];
+    Integer[][] distances = new Integer[dimension][dimension];
     
     for (int i = 0; i < dimension; i++) {
+//        System.out.println(i);
         for (int j = i; j < dimension; j++) {
+//            System.out.println(j);
             int square = (positions[i][0] - positions[j][0]) * (positions[i][0] - positions[j][0])
                     + (positions[i][1] - positions[j][1]) * (positions[i][1] - positions[j][1]);
             distances[i][j] = (int) Math.round(Math.sqrt(square));
+        }
+    }
+    
+    // Lower triangle
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < i; j++) {
+            distances[i][j] = distances[j][i];
         }
     }
     
