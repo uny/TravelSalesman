@@ -3,10 +3,12 @@ package methods;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import models.LinkNode;
 import models.UnionFind;
 
 public class Construction {
     private Integer[][] distances_;
+    private Integer[] indexesForSort_;
 
     public Construction() {
         // TODO Auto-generated constructor stub
@@ -14,6 +16,11 @@ public class Construction {
 
     public Construction(Integer[][] distances) {
         distances_ = distances;
+        final int dimension = distances_.length;
+        indexesForSort_ = new Integer[dimension];
+        for (int i = 0; i < dimension; i++) {
+            indexesForSort_[i] = i;
+        }
     }
 
     public int[] solveByNearestNeighbor() {
@@ -29,17 +36,12 @@ public class Construction {
         route[1] = start[1];
         unionFind.unite(start[0], start[1]);
 
-        Integer[] indexesForSort = new Integer[dimension];
-        for (int i = 0; i < dimension; i++) {
-            indexesForSort[i] = i;
-        }
-
         // Nearest Neighbor
         for (int routeIndex = 1; routeIndex < dimension; routeIndex++) {
             final int curIndex = route[routeIndex];
 
             // Deep copy for sort
-            Integer[] indexes = Arrays.copyOf(indexesForSort, indexesForSort.length);
+            Integer[] indexes = Arrays.copyOf(indexesForSort_, indexesForSort_.length);
             // Sort in ascending order with distance
             Arrays.sort(indexes, new Comparator<Integer>() {
                 @Override
@@ -61,7 +63,7 @@ public class Construction {
         return route;
     }
 
-    public int[] NearestInsertion() {
+    public int[] solveByNearestInsertion() {
         final int dimension = distances_.length;
         // Return value
         int[] route = new int[dimension];
@@ -70,11 +72,15 @@ public class Construction {
 
         // Start with shortest edge
         int[] start = findNearestEdge();
-        route[0] = start[0];
-        route[1] = start[1];
+        LinkNode first  = new LinkNode(start[0]);
+        LinkNode second = new LinkNode(start[1]);
+        // Loop with two
+        first.link(second, second);
+        second.link(first, first);
         unionFind.unite(start[0], start[1]);
-
-
+        
+        
+        
         return route;
     }
 
@@ -99,11 +105,43 @@ public class Construction {
         return edge;
     }
 
-    private int findNearestNode(int[][] distance, int[] route, UnionFind unionFind) {
+    private int findNearestNode(LinkNode first, UnionFind unionFind) {
+        final int dimension = distances_.length;
+        // Return value
         int nearestNodeIndex = 0;
 
+        for (int linked = 1; linked < dimension; linked++) {
+            for (int i = 0; i < array.length; i++) {
+                
+            }
+        }
 
-
+        return nearestNodeIndex;
+    }
+    
+    private int findNearestNode(final int nodeIndex, UnionFind unionFind) {
+        final int dimension = distances_.length;
+        // Return value
+        int nearestNodeIndex = 0;
+        
+        // Deep copy for sort
+        Integer[] indexes = Arrays.copyOf(indexesForSort_, indexesForSort_.length);
+        // Sort in ascending order with distance
+        Arrays.sort(indexes, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return distances_[nodeIndex][o1].compareTo(distances_[nodeIndex][o2]);
+            }
+        });
+        
+        // Except oneself
+        for (int nearIndex = 1; nearIndex < indexes.length; nearIndex++) {
+            if (!unionFind.same(nodeIndex, indexes[nearIndex])) {
+                nearestNodeIndex = indexes[nearIndex];
+                break;
+            }
+        }
+        
         return nearestNodeIndex;
     }
 
