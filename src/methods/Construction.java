@@ -22,41 +22,59 @@ public class Construction {
         int[] route = new int[dimension];
         // To check closed circuit
         UnionFind unionFind = new UnionFind(dimension);
-        
+
         // Start with shortest edge
         int[] start = findNearestEdge();
         route[0] = start[0];
         route[1] = start[1];
         unionFind.unite(start[0], start[1]);
-        
+
         Integer[] indexesForSort = new Integer[dimension];
         for (int i = 0; i < dimension; i++) {
             indexesForSort[i] = i;
         }
-        
+
         // Nearest Neighbor
-        for (int route_i = 1; route_i < dimension; route_i++) {
-            final int cur_i = route[route_i];
-            
+        for (int routeIndex = 1; routeIndex < dimension; routeIndex++) {
+            final int curIndex = route[routeIndex];
+
             // Deep copy for sort
             Integer[] indexes = Arrays.copyOf(indexesForSort, indexesForSort.length);
+            // Sort in ascending order with distance
             Arrays.sort(indexes, new Comparator<Integer>() {
                 @Override
                 public int compare(Integer o1, Integer o2) {
-                    return distances_[cur_i][o1].compareTo(distances_[cur_i][o2]);
+                    return distances_[curIndex][o1].compareTo(distances_[curIndex][o2]);
                 }
             });
-            
+
             // Except oneself
-            for (int near_i = 1; near_i < indexes.length; near_i++) {
-                if (!unionFind.same(cur_i, indexes[near_i])) {
-                    route[route_i + 1] = indexes[near_i];
-                    unionFind.unite(cur_i, indexes[near_i]);
+            for (int nearIndex = 1; nearIndex < indexes.length; nearIndex++) {
+                if (!unionFind.same(curIndex, indexes[nearIndex])) {
+                    route[routeIndex + 1] = indexes[nearIndex];
+                    unionFind.unite(curIndex, indexes[nearIndex]);
                     break;
                 }
             }
         }
-        
+
+        return route;
+    }
+
+    public int[] NearestInsertion() {
+        final int dimension = distances_.length;
+        // Return value
+        int[] route = new int[dimension];
+        // To check closed circuit
+        UnionFind unionFind = new UnionFind(dimension);
+
+        // Start with shortest edge
+        int[] start = findNearestEdge();
+        route[0] = start[0];
+        route[1] = start[1];
+        unionFind.unite(start[0], start[1]);
+
+
         return route;
     }
 
@@ -64,13 +82,13 @@ public class Construction {
         // return value 0:from -> 1:to
         int[] edge = new int[2];
         // tmp value for searching minimum distance
-        int min_distance = Integer.MAX_VALUE;  
+        int minDistance = Integer.MAX_VALUE;  
 
         for (int i = 0; i < distances_.length; i++) {
             for (int j = 0; j < distances_[i].length; j++) {
                 if (i != j) {
-                    if (distances_[i][j] < min_distance) {
-                        min_distance = distances_[i][j];
+                    if (distances_[i][j] < minDistance) {
+                        minDistance = distances_[i][j];
                         edge[0] = i;
                         edge[1] = j;
                     }
@@ -79,6 +97,14 @@ public class Construction {
         }
 
         return edge;
+    }
+
+    private int findNearestNode(int[][] distance, int[] route, UnionFind unionFind) {
+        int nearestNodeIndex = 0;
+
+
+
+        return nearestNodeIndex;
     }
 
 }
