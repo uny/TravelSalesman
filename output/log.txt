@@ -1,3 +1,0 @@
->eil51.tsp
->kroC100.tsp
->ts225.tsp
