@@ -1,8 +1,10 @@
 package methods;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import models.ArrayIndex;
 import models.LinkNode;
 import models.UnionFind;
 
@@ -62,24 +64,75 @@ public class Construction {
 
         return route;
     }
-
-    public int[] solveByNearestInsertion() {
+    
+    public int[] solveByGreedy() {
         final int dimension = distances_.length;
         // Return value
         int[] route = new int[dimension];
         // To check closed circuit
         UnionFind unionFind = new UnionFind(dimension);
-
-        // Start with shortest edge
-        int[] start = findNearestEdge();
-        LinkNode first  = new LinkNode(start[0]);
-        LinkNode second = new LinkNode(start[1]);
-        // Loop with two
-        first.link(second, second);
-        second.link(first, first);
-        unionFind.unite(start[0], start[1]);
         
+        final int allEdgeNum = (dimension * (dimension - 1)) / 2;
+        ArrayIndex[] edges = new ArrayIndex[allEdgeNum];
+        int edgeNumber = 0;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = i + 1; j < dimension; j++) {
+                ArrayIndex arrayIndex = new ArrayIndex();
+                arrayIndex.row = i;
+                arrayIndex.col = j;
+                edges[edgeNumber++] = arrayIndex;
+            }
+        }
         
+        Arrays.sort(edges, new Comparator<ArrayIndex>() {
+            @Override
+            public int compare(ArrayIndex o1, ArrayIndex o2) {
+                return distances_[o1.row][o1.col].compareTo(distances_[o2.row][o2.col]);
+            }
+        });
+        
+        // Have two links for nodes (no-direction)
+        @SuppressWarnings("unchecked")
+        ArrayList<Integer>[] links = new ArrayList[dimension];
+        for (int i = 0; i < links.length; i++) {
+            links[i] = new ArrayList<Integer>();
+        }
+        
+        // Start with shorter edges
+        for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+            ArrayIndex curEdge = edges[edgeIndex];
+            if (!unionFind.same(curEdge.row, curEdge.col)) {
+                // Connect
+                if (links[curEdge.row].size() < 2 && links[curEdge.col].size() < 2) {
+                    links[curEdge.row].add(curEdge.col);
+                    links[curEdge.col].add(curEdge.row);
+                    unionFind.unite(curEdge.row, curEdge.col);
+                }
+            }
+        }
+        
+        int start = 0;
+        for (int i = 0; i < links.length; i++) {
+            if (links[i].size() < 2) {
+                start = i;
+            }
+        }
+        
+        int curNode = start;
+        // Scan route
+        for (int nodeIndex = 0; nodeIndex < dimension; nodeIndex++) {
+            route[nodeIndex] = curNode;
+            if (0 < links[curNode].size()) {
+                int preNode = curNode;
+                curNode = links[curNode].get(0);
+                if (links[curNode].get(0) == preNode) {
+                    links[curNode].remove(0);
+                }
+                else if (links[curNode].get(1) == preNode) {
+                    links[curNode].remove(1);
+                }
+            }
+        }
         
         return route;
     }
@@ -104,45 +157,11 @@ public class Construction {
 
         return edge;
     }
-
-    private int findNearestNode(LinkNode first, UnionFind unionFind) {
-        final int dimension = distances_.length;
-        // Return value
-        int nearestNodeIndex = 0;
-
-        for (int linked = 1; linked < dimension; linked++) {
-            for (int i = 0; i < array.length; i++) {
-                
-            }
-        }
-
-        return nearestNodeIndex;
-    }
     
-    private int findNearestNode(final int nodeIndex, UnionFind unionFind) {
-        final int dimension = distances_.length;
-        // Return value
-        int nearestNodeIndex = 0;
-        
-        // Deep copy for sort
-        Integer[] indexes = Arrays.copyOf(indexesForSort_, indexesForSort_.length);
-        // Sort in ascending order with distance
-        Arrays.sort(indexes, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return distances_[nodeIndex][o1].compareTo(distances_[nodeIndex][o2]);
-            }
-        });
-        
-        // Except oneself
-        for (int nearIndex = 1; nearIndex < indexes.length; nearIndex++) {
-            if (!unionFind.same(nodeIndex, indexes[nearIndex])) {
-                nearestNodeIndex = indexes[nearIndex];
-                break;
-            }
-        }
-        
-        return nearestNodeIndex;
+    // Does not allow to link closed circuit
+    private void connectNearerEdge() {
+        // return value 0:from -> 1:to
+        int[] edge = new int[2];
     }
 
 }

@@ -2,7 +2,6 @@ package models;
 
 public class LinkNode {
     
-    public LinkNode prev;
     public int self;
     public LinkNode next;
     
@@ -14,8 +13,7 @@ public class LinkNode {
         this.self = index;
     }
     
-    public void link(LinkNode prev, LinkNode next) {
-        this.prev = prev;
+    public void link(LinkNode next) {
         this.next = next;
     }
 }

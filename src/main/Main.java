@@ -24,7 +24,7 @@ public static void main(String[] args) {
         Integer[][] distances = calcDistancesBetweenCities(positions);
         
         Construction construction = new Construction(distances);
-        construction.solveByNearestInsertion();
+        construction.solveByGreedy();
         
     } // for (String filename : filenames)
 }
