@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import javax.xml.soap.Node;
 
 import methods.Construction;
+import methods.Improvement;
 
 public class Main {
   public static void main(String[] args) {
@@ -29,11 +30,15 @@ public class Main {
       Integer[][] distances = calcDistancesBetweenCities(positions);
 
       Construction construction = new Construction(distances);
-      long startTime = System.currentTimeMillis();
+//      long startTime = System.currentTimeMillis();
 //      int[] route = construction.solveByNearestNeighbor();
       int[] route = construction.solveByGreedy();
-      long stopTime = System.currentTimeMillis();
-      System.out.println("Time: " + (stopTime - startTime));
+//      long stopTime = System.currentTimeMillis();
+//      System.out.println("Time: " + (stopTime - startTime));
+//      
+      
+      Improvement improvement = new Improvement(route, distances);
+      route = improvement.improveByLinKernighan();
       
       int move = 0;
       for (int nodeIndex = 0; nodeIndex < route.length - 1; nodeIndex++) {
@@ -45,6 +50,7 @@ public class Main {
       System.out.println("Move:" + move);
       
       outputTransition(filename, route, positions);
+      
 
     } // for (String filename : filenames)
   }
@@ -119,7 +125,7 @@ public class Main {
 
     return distances;
   }
-  
+
   private static void outputTransition(String filename,
       int[] route, Integer[][] positions) {
     File file = new File("output/" + filename + "_transition.txt");
@@ -127,13 +133,13 @@ public class Main {
       FileWriter fileWriter = new FileWriter(file);
       BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
       PrintWriter printWriter = new PrintWriter(bufferedWriter);
-      
+
       for (int nodeIndex = 0; nodeIndex < route.length; nodeIndex++) {
         Integer[] position = positions[route[nodeIndex]];
         printWriter.println(route[nodeIndex] + ", "
-        + position[0] + ", " + position[1]);
+            + position[0] + ", " + position[1]);
       }
-      
+
       printWriter.close();
     } catch (IOException e) {
       // TODO Auto-generated catch block
