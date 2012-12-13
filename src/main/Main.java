@@ -11,8 +11,6 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.soap.Node;
-
 import methods.Construction;
 import methods.Improvement;
 
@@ -29,16 +27,19 @@ public class Main {
       // Distances between cities
       Integer[][] distances = calcDistancesBetweenCities(positions);
 
+      // Choose which to use Nearest Neighbor or Greedy
       Construction construction = new Construction(distances);
 //      long startTime = System.currentTimeMillis();
-//      int[] route = construction.solveByNearestNeighbor();
-      int[] route = construction.solveByGreedy();
+      int[] route = construction.solveByNearestNeighbor();
+//      int[] route = construction.solveByGreedy();
 //      long stopTime = System.currentTimeMillis();
 //      System.out.println("Time: " + (stopTime - startTime));
-//      
       
       Improvement improvement = new Improvement(route, distances);
+      long startTime = System.currentTimeMillis();
       route = improvement.improveByLinKernighan();
+      long stopTime = System.currentTimeMillis();
+      System.out.println("Time: " + (stopTime - startTime));
       
       int move = 0;
       for (int nodeIndex = 0; nodeIndex < route.length - 1; nodeIndex++) {
@@ -88,13 +89,10 @@ public class Main {
       }
       bufferedReader.close();
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (NumberFormatException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -142,7 +140,6 @@ public class Main {
 
       printWriter.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

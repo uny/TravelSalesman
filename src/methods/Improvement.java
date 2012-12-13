@@ -12,7 +12,6 @@ public class Improvement {
   private Integer[] indexesForSort_;
 
   public Improvement() {
-    // TODO Auto-generated constructor stub
   }
 
   public Improvement(int[] route, Integer[][] distances) {
@@ -72,39 +71,59 @@ public class Improvement {
       linkNode = linkNode.next;
     }
     
+    linkNode = first_;
+    for (int i = 0; i < route.length; i++) {
+      route[i] = linkNode.self;
+      linkNode = linkNode.next;
+    }
+    
     return route;
   }
   
   private boolean reconnect(LinkNode a) {
-    // Return value
-    boolean reconnected = false;
-    
+    // b is after a
     LinkNode b = a.next;
     LinkNode c;
     Integer[] nearerToB = nearer_[b.self];
-    // For nearer
+    // For nearer = c
     for (Integer nearIndex : nearerToB) {
-      // Find C
-      for (c = first_; c.self == nearIndex; c = c.next);
+      // Find c
+      for (c = first_; c.self != nearIndex; c = c.next);
       // There should not be b on both-sides of c
       if (c.prev.self == b.self) {
         continue;
       }
+      // d is before c
       LinkNode d = c.prev;
-    }
-    
-    return reconnected;
-  }
-  
-  private boolean checkCircuit(LinkNode d) {
-    // Return value
-    boolean isClosed = false;
-    
-    LinkNode linkNode = first_;
-    for (int nodeIndex = 0; nodeIndex < distances_.length; nodeIndex++) {
+      if (d.self == a.self) {
+        continue;
+      }
       
-    }
+      int ab = distances_[a.self][b.self];
+      int cd = distances_[c.self][d.self];
+      int ad = distances_[a.self][d.self];
+      int bc = distances_[b.self][c.self];
+      
+      // ad + bc shorter, then reconnect
+      if (ad + bc < ab + cd) {
+        // Turn over the route between b and d
+        // Turn over in for loop, so we use next to go back
+        for (LinkNode linkNode = d; linkNode != a; linkNode = linkNode.next) {
+          LinkNode tmp = linkNode.next;
+          linkNode.next = linkNode.prev;
+          linkNode.prev = tmp;
+        }
+        // a-d
+        a.next = d;
+        d.prev = a;
+        // b-c
+        b.next = c;
+        c.prev = b;
+        
+        return true;
+      } // if (ad + bc < ab + cd)
+    } // for (Integer nearIndex : nearerToB)
     
-    return isClosed;
+    return false;
   }
 }

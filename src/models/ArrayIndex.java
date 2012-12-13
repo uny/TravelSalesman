@@ -6,6 +6,5 @@ public class ArrayIndex {
   public int col;
 
   public ArrayIndex() {
-    // TODO Auto-generated constructor stub
   }
 }

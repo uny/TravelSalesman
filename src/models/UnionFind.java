@@ -6,7 +6,6 @@ public class UnionFind {
   private int[] rank;
 
   public UnionFind() {
-    // TODO Auto-generated constructor stub
   }
 
   public UnionFind(int numNodes) {

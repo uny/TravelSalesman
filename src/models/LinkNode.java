@@ -7,7 +7,6 @@ public class LinkNode {
   public int self;
 
   public LinkNode() {
-    // TODO Auto-generated constructor stub
   }
   
   public LinkNode(int self) {

@@ -12,7 +12,6 @@ public class Construction {
   private Integer[] indexesForSort_;
 
   public Construction() {
-    // TODO Auto-generated constructor stub
   }
 
   public Construction(Integer[][] distances) {
@@ -151,16 +150,9 @@ public class Construction {
             edge[1] = j;
           }
         }
-      }
-    }
+      } // for (int j = 0; j < distances_[i].length; j++)
+    } // for (int i = 0; i < distances_.length; i++)
 
     return edge;
   }
-
-  // Does not allow to link closed circuit
-  private void connectNearerEdge() {
-    // return value 0:from -> 1:to
-    int[] edge = new int[2];
-  }
-
 }
